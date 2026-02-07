@@ -1,0 +1,63 @@
+{
+  "project_info": {
+    "project_number": "192679934948",
+    "project_id": "nutricional-76dd0",
+    "storage_bucket": "nutricional-76dd0.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:192679934948:android:48f22d0162025ce29c25f1",
+        "android_client_info": {
+          "package_name": "com.dansu.nutricional"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "192679934948-hu4qfas5ccav572cknsi90hoadfpodtf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dansu.nutricional",
+            "certificate_hash": "5fdd79b879831eca30ac4dead4b1c6a4707cd25b"
+          }
+        },
+        {
+          "client_id": "192679934948-ir7rh9jjnqfhfip0lri9mcpt41tgfthv.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dansu.nutricional",
+            "certificate_hash": "a6c19ceee891906a36d2855f5a97433d38f81ca3"
+          }
+        },
+        {
+          "client_id": "192679934948-uo4jhkggc3hnfipu19fupb44bn9goj1h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dansu.nutricional",
+            "certificate_hash": "a24bcca44a252f4ae3e09cf54fd859e64beb7f81"
+          }
+        },
+        {
+          "client_id": "192679934948-eac9sk5ar2tkr4p9ijpjpccg74tnrfhv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvV-LJGtpOFrTik6f6jm1CfGtQLOrKfCE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "192679934948-eac9sk5ar2tkr4p9ijpjpccg74tnrfhv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

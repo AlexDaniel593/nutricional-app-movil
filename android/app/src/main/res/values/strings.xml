@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">nutricional</string>
+    <string name="facebook_app_id">4150163971979783</string>
+    <string name="facebook_client_token">adb3fb6baa17fe32e250488f19e15fe1</string>
+    <string name="fb_login_protocol_scheme">fb4150163971979783</string>
+</resources>
