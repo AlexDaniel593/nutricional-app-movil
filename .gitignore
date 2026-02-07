@@ -46,3 +46,4 @@ app.*.map.json
 
 # key directory
 /key
+*.jks
