@@ -47,3 +47,10 @@ app.*.map.json
 # key directory
 /key
 *.jks
+
+
+# Firebase / Google Services (sensibles)
+lib/firebase_options.dart
+android/app/google-services.json
+*.google-services.json
+*.GoogleService-Info.plist
