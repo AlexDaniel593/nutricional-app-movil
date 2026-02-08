@@ -28,7 +28,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
   Future<void> _loadProducts() async {
     final authProvider = context.read<AuthProvider>();
     if (authProvider.currentUser != null) {
-      await context.read<ProductProvider>().loadProducts(authProvider.currentUser!.id);
+      await context.read<ProductProvider>().loadProducts(userId: authProvider.currentUser!.id);
     }
   }
 

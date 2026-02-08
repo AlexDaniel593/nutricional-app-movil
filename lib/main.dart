@@ -3,11 +3,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
 import 'presentation/providers/auth_provider.dart';
 import 'presentation/providers/recipe_provider.dart';
 import 'presentation/providers/calendar_provider.dart';
 import 'presentation/providers/product_provider.dart';
+import 'presentation/providers/theme_provider.dart';
 import 'presentation/pages/login_screen.dart';
 import 'presentation/pages/register_screen.dart';
 import 'presentation/pages/home_screen.dart';
@@ -19,6 +21,7 @@ import 'presentation/pages/product_list_screen.dart';
 import 'presentation/pages/product_detail_screen.dart';
 import 'presentation/pages/scanner_screen.dart';
 import 'presentation/pages/notification_detail_page.dart';
+import 'presentation/pages/introduction_page.dart';
 import 'data/services/connectivity_service.dart';
 import 'data/services/firebase_messaging_service.dart';
 import 'data/datasources/local/database_helper.dart';
@@ -72,6 +75,7 @@ class MainApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => RecipeProvider()),
         ChangeNotifierProvider(create: (_) => CalendarProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(
           create: (_) => ProductProvider(
             createProduct: CreateProduct(productRepository),
@@ -82,37 +86,50 @@ class MainApp extends StatelessWidget {
           ),
         ),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Nutricional',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-          useMaterial3: true,
-        ),
-        home: const AuthGate(),
-        routes: {
-          '/login': (context) => const LoginScreen(),
-          '/register': (context) => const RegisterScreen(),
-          '/home': (context) => const HomeScreen(),
-          '/recipes': (context) => const RecipeListScreen(),
-          '/calendar': (context) => const CalendarScreen(),
-          '/products': (context) => const ProductListScreen(),
-          '/product-detail': (context) => const ProductDetailScreen(),
-          '/scanner': (context) => const ScannerScreen(),
-          '/recipe-form': (context) => const RecipeFormScreen(),
-          '/recipe-detail': (context) => const RecipeDetailScreen(),
-        },
-        onGenerateRoute: (settings) {
-          if (settings.name == '/notification-detail') {
-            final args = settings.arguments as Map<String, dynamic>?;
-            return MaterialPageRoute(
-              builder: (context) => NotificationDetailPage(
-                title: args?['title'] ?? 'Notificación',
-                body: args?['body'] ?? '',
+      child: Consumer<ThemeProvider>(
+        builder: (context, themeProvider, child) {
+          if (themeProvider.isLoading) {
+            return const MaterialApp(
+              debugShowCheckedModeBanner: false,
+              home: Scaffold(
+                body: Center(child: CircularProgressIndicator()),
               ),
             );
           }
-          return null;
+          
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Nutricional',
+            theme: themeProvider.lightTheme,
+            darkTheme: themeProvider.darkTheme,
+            themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+            home: const AuthGate(),
+            routes: {
+              '/login': (context) => const LoginScreen(),
+              '/register': (context) => const RegisterScreen(),
+              '/home': (context) => const HomeScreen(),
+              '/recipes': (context) => const RecipeListScreen(),
+              '/calendar': (context) => const CalendarScreen(),
+              '/products': (context) => const ProductListScreen(),
+              '/product-detail': (context) => const ProductDetailScreen(),
+              '/scanner': (context) => const ScannerScreen(),
+              '/recipe-form': (context) => const RecipeFormScreen(),
+              '/recipe-detail': (context) => const RecipeDetailScreen(),
+              '/introduction': (context) => const IntroductionPage(),
+            },
+            onGenerateRoute: (settings) {
+              if (settings.name == '/notification-detail') {
+                final args = settings.arguments as Map<String, dynamic>?;
+                return MaterialPageRoute(
+                  builder: (context) => NotificationDetailPage(
+                    title: args?['title'] ?? 'Notificación',
+                    body: args?['body'] ?? '',
+                  ),
+                );
+              }
+              return null;
+            },
+          );
         },
       ),
     );
@@ -120,12 +137,47 @@ class MainApp extends StatelessWidget {
 }
 
 /// Widget que decide qué pantalla mostrar según el estado de autenticación
-class AuthGate extends StatelessWidget {
+class AuthGate extends StatefulWidget {
   const AuthGate({super.key});
+
+  @override
+  State<AuthGate> createState() => _AuthGateState();
+}
+
+class _AuthGateState extends State<AuthGate> {
+  bool _isCheckingIntro = true;
+  bool _introCompleted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkIntroduction();
+  }
+
+  Future<void> _checkIntroduction() async {
+    final prefs = await SharedPreferences.getInstance();
+    final completed = prefs.getBool('introduction_completed') ?? false;
+    setState(() {
+      _introCompleted = completed;
+      _isCheckingIntro = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+
+    // Verificando si se completó la introducción
+    if (_isCheckingIntro) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    // Si no se ha completado la introducción, mostrarla
+    if (!_introCompleted) {
+      return const IntroductionPage();
+    }
 
     // Mientras verifica la sesión, mostrar splash
     if (authProvider.isCheckingSession) {

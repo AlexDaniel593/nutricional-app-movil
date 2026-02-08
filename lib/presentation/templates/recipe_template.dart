@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../theme/app_colors.dart';
-
 /// Template: Plantilla base para pantallas de recetas
 class RecipeTemplate extends StatelessWidget {
   final Widget child;
@@ -25,7 +23,6 @@ class RecipeTemplate extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.background,
       drawer: drawer,
       appBar: AppBar(
         leading: drawer != null && !showBackButton
@@ -51,8 +48,8 @@ class RecipeTemplate extends StatelessWidget {
           ],
         ),
         automaticallyImplyLeading: showBackButton,
-        backgroundColor: AppColors.hunterGreen,
-        foregroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
         elevation: 0,
         actions: actions,
       ),

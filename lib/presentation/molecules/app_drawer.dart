@@ -5,6 +5,7 @@ import '../theme/app_colors.dart';
 class AppDrawer extends StatelessWidget {
   final String? username;
   final String? email;
+  final VoidCallback? onHomePressed;
   final VoidCallback? onRecipesPressed;
   final VoidCallback? onCalendarPressed;
   final VoidCallback? onProductsPressed;
@@ -15,6 +16,7 @@ class AppDrawer extends StatelessWidget {
     super.key,
     this.username,
     this.email,
+    this.onHomePressed,
     this.onRecipesPressed,
     this.onCalendarPressed,
     this.onProductsPressed,
@@ -50,14 +52,19 @@ class AppDrawer extends StatelessWidget {
             accountEmail: Text(email ?? ''),
           ),
           ListTile(
-            leading: const Icon(Icons.restaurant_menu),
-            title: const Text('Mis Recetas'),
-            onTap: onRecipesPressed,
+            leading: const Icon(Icons.home),
+            title: const Text('Inicio'),
+            onTap: onHomePressed,
           ),
           ListTile(
             leading: const Icon(Icons.calendar_today),
             title: const Text('Calendario Semanal'),
             onTap: onCalendarPressed,
+          ),
+          ListTile(
+            leading: const Icon(Icons.restaurant_menu),
+            title: const Text('Mis Recetas'),
+            onTap: onRecipesPressed,
           ),
           ListTile(
             leading: const Icon(Icons.inventory_2),

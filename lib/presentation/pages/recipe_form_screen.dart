@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import '../providers/auth_provider.dart';
 import '../providers/recipe_provider.dart';
+import '../providers/product_provider.dart';
 import '../../domain/entities/recipe.dart';
 import '../templates/recipe_template.dart';
 import '../organisms/recipe/recipe_image_picker.dart';
@@ -103,6 +104,45 @@ class _RecipeFormScreenState extends State<RecipeFormScreen> {
     setState(() {
       _ingredientControllers.add(TextEditingController());
     });
+  }
+
+  void _addProductsAsIngredients() async {
+    final productProvider = context.read<ProductProvider>();
+    final authProvider = context.read<AuthProvider>();
+    
+    if (authProvider.currentUser == null) return;
+    
+    // Cargar productos si aún no están cargados
+    if (productProvider.products.isEmpty) {
+      await productProvider.loadProducts(userId: authProvider.currentUser!.id);
+    }
+    
+    if (!mounted) return;
+    
+    // Mostrar diálogo de selección de productos
+    final selectedProducts = await showDialog<List<String>>(
+      context: context,
+      builder: (context) => _ProductSelectionDialog(
+        products: productProvider.products,
+      ),
+    );
+    
+    if (selectedProducts != null && selectedProducts.isNotEmpty) {
+      setState(() {
+        for (var productName in selectedProducts) {
+          _ingredientControllers.add(TextEditingController(text: productName));
+        }
+      });
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('${selectedProducts.length} producto(s) agregado(s)'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    }
   }
 
   void _removeIngredient(int index) {
@@ -242,6 +282,15 @@ class _RecipeFormScreenState extends State<RecipeFormScreen> {
                       onAdd: _addIngredient,
                       onRemove: _removeIngredient,
                     ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _addProductsAsIngredients,
+                        icon: const Icon(Icons.add_shopping_cart),
+                        label: const Text('Agregar productos escaneados'),
+                      ),
+                    ),
                     const SizedBox(height: 24),
                     RecipeStepsFormSection(
                       controllers: _stepControllers,
@@ -263,6 +312,91 @@ class _RecipeFormScreenState extends State<RecipeFormScreen> {
                 ),
               ),
             ),
+    );
+  }
+}
+
+// Diálogo para seleccionar productos
+class _ProductSelectionDialog extends StatefulWidget {
+  final List<dynamic> products;
+
+  const _ProductSelectionDialog({required this.products});
+
+  @override
+  State<_ProductSelectionDialog> createState() => _ProductSelectionDialogState();
+}
+
+class _ProductSelectionDialogState extends State<_ProductSelectionDialog> {
+  final Set<String> _selectedProducts = {};
+  String _searchQuery = '';
+
+  @override
+  Widget build(BuildContext context) {
+    final filteredProducts = widget.products.where((product) {
+      return product.name.toLowerCase().contains(_searchQuery.toLowerCase());
+    }).toList();
+
+    return AlertDialog(
+      title: const Text('Seleccionar Productos'),
+      content: SizedBox(
+        width: double.maxFinite,
+        height: 400,
+        child: Column(
+          children: [
+            TextField(
+              decoration: const InputDecoration(
+                hintText: 'Buscar producto...',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+              },
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: filteredProducts.isEmpty
+                  ? const Center(
+                      child: Text('No hay productos disponibles'),
+                    )
+                  : ListView.builder(
+                      itemCount: filteredProducts.length,
+                      itemBuilder: (context, index) {
+                        final product = filteredProducts[index];
+                        final isSelected = _selectedProducts.contains(product.name);
+                        
+                        return CheckboxListTile(
+                          title: Text(product.name),
+                          subtitle: Text(product.brand),
+                          value: isSelected,
+                          onChanged: (selected) {
+                            setState(() {
+                              if (selected == true) {
+                                _selectedProducts.add(product.name);
+                              } else {
+                                _selectedProducts.remove(product.name);
+                              }
+                            });
+                          },
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancelar'),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.of(context).pop(_selectedProducts.toList()),
+          child: Text('Agregar (${_selectedProducts.length})'),
+        ),
+      ],
     );
   }
 }

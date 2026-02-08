@@ -8,6 +8,7 @@ import '../providers/auth_provider.dart';
 import '../providers/recipe_provider.dart';
 import '../providers/product_provider.dart';
 import '../providers/calendar_provider.dart';
+import '../providers/theme_provider.dart';
 import '../../data/datasources/recipe_firebase_datasource.dart';
 import '../../data/datasources/product_firebase_datasource.dart';
 import '../../data/datasources/calendar_firebase_datasource.dart';
@@ -186,36 +187,67 @@ class SettingsScreen extends StatelessWidget {
     }
   }
 
-  Future<void> _sendSupportEmail(BuildContext context) async {
-    final Uri emailUri = Uri(
-      scheme: 'mailto',
-      path: 'dalexis203@gmail.com',
-      query: 'subject=Soporte - App Nutricional&body=Hola, necesito ayuda con:',
-    );
-
-    try {
-      if (await canLaunchUrl(emailUri)) {
-        await launchUrl(emailUri);
-      } else {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('No se pudo abrir el cliente de correo'),
-              backgroundColor: Colors.red,
+  void _showSupportModal(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.support_agent, color: Colors.green),
+            SizedBox(width: 8),
+            Text('Soporte'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              '¿Necesitas ayuda?',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
             ),
-          );
-        }
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error al enviar correo: $e'),
-            backgroundColor: Colors.red,
+            const SizedBox(height: 16),
+            const Text(
+              'Contáctanos a través de nuestro correo electrónico:',
+              style: TextStyle(fontSize: 14),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.grey[100],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.email, size: 20, color: Colors.grey),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'dalexis203@gmail.com',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: AppColors.hunterGreen,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('Cerrar'),
           ),
-        );
-      }
-    }
+        ],
+      ),
+    );
   }
 
   Future<void> _openDataDeletionPolicy(BuildContext context) async {
@@ -407,12 +439,13 @@ class SettingsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
+    final themeProvider = context.watch<ThemeProvider>();
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Configuración'),
-        backgroundColor: AppColors.hunterGreen,
-        foregroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        foregroundColor: Theme.of(context).colorScheme.onPrimary,
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -465,6 +498,31 @@ class SettingsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
 
+          // Preferencias
+          Card(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: Icon(
+                    themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+                    color: Colors.orange,
+                  ),
+                  title: const Text('Modo oscuro'),
+                  subtitle: Text(
+                    themeProvider.isDarkMode ? 'Activado' : 'Desactivado',
+                  ),
+                  trailing: Switch(
+                    value: themeProvider.isDarkMode,
+                    onChanged: (value) async {
+                      await themeProvider.toggleTheme();
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: 16),
+
           // Opciones
           Card(
             child: Column(
@@ -482,7 +540,7 @@ class SettingsScreen extends StatelessWidget {
                   title: const Text('Soporte'),
                   subtitle: const Text('Contacta con nuestro equipo de soporte'),
                   trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-                  onTap: () => _sendSupportEmail(context),
+                  onTap: () => _showSupportModal(context),
                 ),
                 const Divider(height: 1),
                 ListTile(

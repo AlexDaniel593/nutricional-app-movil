@@ -44,7 +44,7 @@ class ProductProvider with ChangeNotifier {
   }
 
   /// Carga productos del usuario
-  Future<void> loadProducts(String userId) async {
+  Future<void> loadProducts({required String userId}) async {
     _isLoading = true;
     _error = null;
     notifyListeners();

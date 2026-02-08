@@ -69,7 +69,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
     // Si no se muestra bottom nav, solo retornar el contenido
     if (!widget.showBottomNav) {
       return Scaffold(
-        backgroundColor: const Color(0xFFF5F5F5),
         body: SafeArea(child: content),
       );
     }
@@ -81,6 +80,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
       drawer: widget.showBottomNav ? AppDrawer(
         username: authProvider.currentUser?.username,
         email: authProvider.currentUser?.email,
+        onHomePressed: () {
+          Navigator.pop(context);
+          Navigator.pushReplacementNamed(context, '/home');
+        },
         onRecipesPressed: () {
           Navigator.pop(context);
           Navigator.pushReplacementNamed(context, '/recipes');
@@ -114,7 +117,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
     return Container(
       padding: const EdgeInsets.all(16),
-      color: Colors.grey[200],
+      color: Theme.of(context).colorScheme.surfaceContainerHighest,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -161,16 +164,16 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   Widget _buildCalendarHeader() {
     return Container(
-      color: const Color(0xFF2D5016),
+      color: Theme.of(context).colorScheme.primaryContainer,
       height: 60,
       child: Row(
         children: [
           SizedBox(
             width: 50,
             child: Center(
-              child: const Text(
+              child: Text(
                 'Día',
-                style: TextStyle(fontSize: 11, color: Colors.white, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 11, color: Theme.of(context).colorScheme.onPrimaryContainer, fontWeight: FontWeight.bold),
               ),
             ),
           ),
@@ -178,7 +181,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             child: Center(
               child: Text(
                 _getMealTypeName(mealType),
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Colors.white),
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: Theme.of(context).colorScheme.onPrimaryContainer),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -201,7 +204,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           height: cellHeight,
           decoration: BoxDecoration(
             border: Border(
-              bottom: BorderSide(color: Colors.grey[300]!),
+              bottom: BorderSide(color: Theme.of(context).dividerColor),
             ),
           ),
           child: Row(
@@ -209,7 +212,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               Container(
                 width: 50,
                 decoration: BoxDecoration(
-                  border: Border(right: BorderSide(color: Colors.grey[300]!)),
+                  border: Border(right: BorderSide(color: Theme.of(context).dividerColor)),
                 ),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -250,11 +253,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
         onTap: () => _showRecipeSelector(day, mealType, authProvider, calendarProvider),
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[300]!),
+            border: Border.all(color: Theme.of(context).dividerColor),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: const Center(
-            child: Icon(Icons.add, color: Colors.grey),
+          child: Center(
+            child: Icon(Icons.add, color: Theme.of(context).colorScheme.onSurfaceVariant),
           ),
         ),
       );
@@ -264,7 +267,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
       onTap: () => _showEntryOptions(entry, authProvider, calendarProvider),
       child: Container(
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey[300]!),
+          border: Border.all(color: Theme.of(context).dividerColor),
           borderRadius: BorderRadius.circular(8),
           image: entry.recipeImageUrl.isNotEmpty
               ? DecorationImage(
@@ -361,7 +364,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         placeholder: (context, url) => Container(
                           width: 50,
                           height: 50,
-                          color: Colors.grey[200],
+                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
                           child: const Center(
                             child: SizedBox(
                               width: 20,
@@ -373,20 +376,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         errorWidget: (context, url, error) => Container(
                           width: 50,
                           height: 50,
-                          color: Colors.grey[300],
-                          child: const Icon(
+                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                          child: Icon(
                             Icons.restaurant,
-                            color: Colors.grey,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       )
                     : Container(
                         width: 50,
                         height: 50,
-                        color: Colors.grey[300],
-                        child: const Icon(
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        child: Icon(
                           Icons.restaurant,
-                          color: Colors.grey,
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                 title: Text(recipe.title),
