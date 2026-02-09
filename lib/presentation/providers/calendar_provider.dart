@@ -204,11 +204,13 @@ class CalendarProvider with ChangeNotifier {
     notifyListeners();
 
     try {
+      // Eliminar (esto ahora elimina primero de Firebase)
       await _deleteEntry(id);
       
       // Cancelar notificación
       await _notificationService.cancelNotification(id);
       
+      // Actualizar la lista local inmediatamente removiendo la entrada
       _entries.removeWhere((entry) => entry.id == id);
     } catch (e) {
       _errorMessage = e.toString();

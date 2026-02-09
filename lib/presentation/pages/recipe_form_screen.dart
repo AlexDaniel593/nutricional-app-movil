@@ -212,6 +212,8 @@ class _RecipeFormScreenState extends State<RecipeFormScreen> {
             servings: int.tryParse(_servingsController.text) ?? 1,
             category: _categoryController.text,
           );
+          // Recargar recetas para mostrar cambios inmediatamente
+          await recipeProvider.loadRecipes(userId: authProvider.currentUser!.id);
         } else {
           await recipeProvider.addRecipe(
             title: _titleController.text,
@@ -233,7 +235,11 @@ class _RecipeFormScreenState extends State<RecipeFormScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.pop(context);
+          if (_isEditMode) {
+            Navigator.pushReplacementNamed(context, '/recipes');
+          } else {
+            Navigator.pop(context);
+          }
         }
       } catch (e) {
         if (mounted) {

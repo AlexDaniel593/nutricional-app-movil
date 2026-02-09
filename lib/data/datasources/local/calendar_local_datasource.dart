@@ -183,14 +183,22 @@ class CalendarLocalDatasource {
   /// Guarda múltiples entradas desde la nube
   Future<void> saveEntriesFromCloud(List<CalendarEntry> entries) async {
     final db = await _dbHelper.database;
+    
+    // Obtener IDs de entradas marcadas como eliminadas localmente
+    final deletedIds = await getDeletedEntryIds();
+    final deletedSet = deletedIds.toSet();
+    
     final batch = db.batch();
 
     for (final entry in entries) {
-      batch.insert(
-        'calendar_entries',
-        _entryToMap(entry, synced: true),
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+      // No sobrescribir entradas que fueron eliminadas localmente
+      if (!deletedSet.contains(entry.id)) {
+        batch.insert(
+          'calendar_entries',
+          _entryToMap(entry, synced: true),
+          conflictAlgorithm: ConflictAlgorithm.replace,
+        );
+      }
     }
 
     await batch.commit(noResult: true);

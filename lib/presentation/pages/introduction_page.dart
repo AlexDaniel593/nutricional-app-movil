@@ -21,10 +21,9 @@ class IntroductionPage extends StatelessWidget {
           title: "Bienvenido a Nutricional",
           body: "Tu aplicación completa para gestionar recetas saludables y planificar tus comidas semanales.",
           image: Center(
-            child: Icon(
-              Icons.restaurant_menu,
-              size: 200,
-              color: Colors.green[700],
+            child: Image.asset(
+              'assets/image/1.jpg',
+              height: 300,
             ),
           ),
           decoration: const PageDecoration(
@@ -40,10 +39,9 @@ class IntroductionPage extends StatelessWidget {
           title: "Gestiona tus Recetas",
           body: "Crea, edita y organiza tus recetas favoritas. Sube imágenes, añade ingredientes y pasos de preparación.",
           image: Center(
-            child: Icon(
-              Icons.book,
-              size: 200,
-              color: Colors.green[700],
+            child: Image.asset(
+              'assets/image/2.jpg',
+              height: 300,
             ),
           ),
           decoration: const PageDecoration(
@@ -59,10 +57,9 @@ class IntroductionPage extends StatelessWidget {
           title: "Escanea Productos",
           body: "Utiliza el escáner de códigos de barras para obtener información nutricional de productos al instante.",
           image: Center(
-            child: Icon(
-              Icons.qr_code_scanner,
-              size: 200,
-              color: Colors.green[700],
+            child: Image.asset(
+              'assets/image/3.jpg',
+              height: 300,
             ),
           ),
           decoration: const PageDecoration(
@@ -78,10 +75,9 @@ class IntroductionPage extends StatelessWidget {
           title: "Planifica tu Semana",
           body: "Organiza tus comidas en el calendario semanal y mantén un control de tu alimentación.",
           image: Center(
-            child: Icon(
-              Icons.calendar_month,
-              size: 200,
-              color: Colors.green[700],
+            child: Image.asset(
+              'assets/image/4.jpg',
+              height: 300,
             ),
           ),
           decoration: const PageDecoration(

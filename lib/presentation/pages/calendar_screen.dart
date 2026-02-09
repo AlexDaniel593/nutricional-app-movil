@@ -457,6 +457,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
         ),
         actions: [
           TextButton(
+            onPressed: () => Navigator.pop(context, 'view'),
+            child: const Text('Visualizar'),
+          ),
+          TextButton(
             onPressed: () => Navigator.pop(context, 'delete'),
             child: const Text('Eliminar', style: TextStyle(color: Colors.red)),
           ),
@@ -470,6 +474,35 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
     if (result == 'delete' && authProvider.currentUser != null) {
       await calendarProvider.removeEntry(entry.id, authProvider.currentUser!.id);
+    } else if (result == 'view' && mounted) {
+      // Cargar la receta completa y navegar al detalle
+      final recipeProvider = context.read<RecipeProvider>();
+      
+      // Buscar la receta en la lista cargada
+      Recipe? recipe = recipeProvider.recipes.firstWhere(
+        (r) => r.id == entry.recipeId,
+        orElse: () => Recipe(
+          id: entry.recipeId,
+          title: entry.recipeTitle,
+          description: '',
+          imageUrl: entry.recipeImageUrl,
+          ingredients: [],
+          steps: [],
+          userId: entry.userId,
+          createdAt: DateTime.now(),
+          preparationTime: 0,
+          servings: 1,
+          category: '',
+        ),
+      );
+
+      if (mounted) {
+        Navigator.pushNamed(
+          context,
+          '/recipe-detail',
+          arguments: {'recipe': recipe},
+        );
+      }
     }
   }
 }

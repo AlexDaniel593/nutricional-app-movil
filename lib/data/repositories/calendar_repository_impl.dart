@@ -66,16 +66,19 @@ class CalendarRepositoryImpl implements CalendarRepository {
     
     // Si hay conexión, sincronizar en segundo plano sin bloquear
     if (_connectivityService.isConnected) {
-      // No await - sincronizar en background
-      _remoteDatasource.getEntriesByDateRange(
-        userId,
-        startDate,
-        endDate,
-      ).then((cloudEntries) async {
-        // Actualizar cache local con los datos de la nube
-        await _localDatasource.saveEntriesFromCloud(cloudEntries);
-      }).catchError((_) {
-        // Ignorar errores de sincronización background
+      // No await - sincronizar en background con un pequeño delay
+      Future.delayed(const Duration(milliseconds: 1000)).then((_) async {
+        try {
+          final cloudEntries = await _remoteDatasource.getEntriesByDateRange(
+            userId,
+            startDate,
+            endDate,
+          );
+          // Actualizar cache local con los datos de la nube
+          await _localDatasource.saveEntriesFromCloud(cloudEntries);
+        } catch (_) {
+          // Ignorar errores de sincronización background
+        }
       });
     }
 
@@ -123,19 +126,24 @@ class CalendarRepositoryImpl implements CalendarRepository {
 
   @override
   Future<void> deleteEntry(String id) async {
-    // Siempre eliminar primero en local (soft delete)
-    await _localDatasource.deleteEntry(id);
-
-    // Si hay conexión, intentar eliminar en la nube
+    // Si hay conexión, PRIMERO eliminar de Firebase
     if (_connectivityService.isConnected) {
       try {
         await _remoteDatasource.deleteEntry(id);
-        // Eliminar permanentemente del local
-        await _localDatasource.hardDeleteEntry(id);
       } catch (e) {
-        // Se sincronizará después
+        // Si falla Firebase, marcar como eliminada para sincronizar después
+        await _localDatasource.deleteEntry(id);
+        return;
       }
+    } else {
+      // Sin conexión, solo marcar como eliminada localmente
+      await _localDatasource.deleteEntry(id);
+      return;
     }
+    
+    // Si llegamos aquí, Firebase se eliminó correctamente
+    // Ahora eliminar permanentemente de local
+    await _localDatasource.hardDeleteEntry(id);
   }
 
   @override
