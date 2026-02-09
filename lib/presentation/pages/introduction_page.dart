@@ -18,7 +18,7 @@ class IntroductionPage extends StatelessWidget {
     return IntroductionScreen(
       pages: [
         PageViewModel(
-          title: "Bienvenido a Nutricional",
+          title: "Bienvenido a NutriCalendar",
           body: "Tu aplicación completa para gestionar recetas saludables y planificar tus comidas semanales.",
           image: Center(
             child: Image.asset(
