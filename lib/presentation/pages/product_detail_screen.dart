@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../domain/entities/product.dart';
 import '../providers/product_provider.dart';
+import '../atoms/smart_cached_image.dart';
 import '../theme/app_colors.dart';
 
 class ProductDetailScreen extends StatelessWidget {
@@ -73,13 +73,10 @@ class ProductDetailScreen extends StatelessWidget {
               Container(
                 height: 250,
                 color: Colors.grey[200],
-                child: CachedNetworkImage(
+                child: SmartCachedImage(
                   imageUrl: product.imageUrl,
                   fit: BoxFit.contain,
-                  placeholder: (context, url) => const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                  errorWidget: (context, url, error) => const Icon(
+                  errorWidget: const Icon(
                     Icons.image_not_supported,
                     size: 100,
                     color: Colors.grey,

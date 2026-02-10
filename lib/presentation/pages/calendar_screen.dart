@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../providers/auth_provider.dart';
 import 'settings_screen.dart';
 import '../providers/calendar_provider.dart';
 import '../providers/recipe_provider.dart';
 import '../templates/recipe_template.dart';
 import '../molecules/app_drawer.dart';
+import '../atoms/smart_cached_image.dart';
 import '../../domain/entities/recipe.dart';
 
 class CalendarScreen extends StatefulWidget {
@@ -271,7 +271,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
           borderRadius: BorderRadius.circular(8),
           image: entry.recipeImageUrl.isNotEmpty
               ? DecorationImage(
-                  image: NetworkImage(entry.recipeImageUrl),
+                  image: SmartCachedImage.getImageProvider(entry.recipeImageUrl),
                   fit: BoxFit.cover,
                   colorFilter: ColorFilter.mode(
                     Colors.black.withValues(alpha: 0.3),
@@ -356,24 +356,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
               final recipe = recipeProvider.recipes[index];
               return ListTile(
                 leading: recipe.imageUrl.isNotEmpty
-                    ? CachedNetworkImage(
+                    ? SmartCachedImage(
                         imageUrl: recipe.imageUrl,
                         width: 50,
                         height: 50,
                         fit: BoxFit.cover,
-                        placeholder: (context, url) => Container(
-                          width: 50,
-                          height: 50,
-                          color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                          child: const Center(
-                            child: SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                          ),
-                        ),
-                        errorWidget: (context, url, error) => Container(
+                        errorWidget: Container(
                           width: 50,
                           height: 50,
                           color: Theme.of(context).colorScheme.surfaceContainerHighest,

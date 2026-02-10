@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'settings_screen.dart';
 import 'recipe_list_screen.dart';
 import 'calendar_screen.dart';
@@ -10,6 +9,7 @@ import '../providers/auth_provider.dart';
 import '../providers/recipe_provider.dart';
 import '../providers/calendar_provider.dart';
 import '../molecules/app_drawer.dart';
+import '../atoms/smart_cached_image.dart';
 import '../../data/services/firebase_messaging_service.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -275,17 +275,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: upcomingEntries.first.recipeImageUrl.isNotEmpty
-                        ? CachedNetworkImage(
+                        ? SmartCachedImage(
                             imageUrl: upcomingEntries.first.recipeImageUrl,
                             width: 96,
                             height: 96,
                             fit: BoxFit.cover,
-                            placeholder: (context, url) => Container(
-                              width: 96,
-                              height: 96,
-                              color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                              child: const Center(child: CircularProgressIndicator()),
-                            ),
                           )
                         : Container(
                             width: 96,
@@ -442,15 +436,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         ClipRRect(
                           borderRadius: BorderRadius.circular(16),
                           child: recipe.imageUrl.isNotEmpty
-                              ? CachedNetworkImage(
+                              ? SmartCachedImage(
                                   imageUrl: recipe.imageUrl,
                                   width: 200,
                                   height: 280,
                                   fit: BoxFit.cover,
-                                  placeholder: (context, url) => Container(
-                                    color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                                    child: const Center(child: CircularProgressIndicator()),
-                                  ),
                                 )
                               : Container(
                                   width: 200,

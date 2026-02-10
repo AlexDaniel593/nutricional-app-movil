@@ -157,10 +157,9 @@ class CalendarProvider with ChangeNotifier {
       // Programar notificación
       await _notificationService.scheduleNotification(newEntry);
       
-      // Recargar entradas si está en la semana actual
-      if (_isInCurrentWeek(scheduledDate)) {
-        await loadWeekEntries(userId);
-      }
+      // Recargar entradas desde la base de datos
+      final weekEnd = _selectedWeekStart.add(const Duration(days: 7));
+      _entries = await _getEntries.callByDateRange(userId, _selectedWeekStart, weekEnd);
     } catch (e) {
       _errorMessage = e.toString();
       rethrow;
@@ -210,8 +209,9 @@ class CalendarProvider with ChangeNotifier {
       // Cancelar notificación
       await _notificationService.cancelNotification(id);
       
-      // Actualizar la lista local inmediatamente removiendo la entrada
-      _entries.removeWhere((entry) => entry.id == id);
+      // Recargar entradas desde la base de datos para garantizar consistencia
+      final weekEnd = _selectedWeekStart.add(const Duration(days: 7));
+      _entries = await _getEntries.callByDateRange(userId, _selectedWeekStart, weekEnd);
     } catch (e) {
       _errorMessage = e.toString();
       rethrow;
@@ -219,13 +219,6 @@ class CalendarProvider with ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
-  }
-
-  /// Verifica si una fecha está en la semana seleccionada
-  bool _isInCurrentWeek(DateTime date) {
-    final weekEnd = _selectedWeekStart.add(const Duration(days: 7));
-    return date.isAfter(_selectedWeekStart.subtract(const Duration(seconds: 1))) &&
-           date.isBefore(weekEnd);
   }
 
   /// Obtiene los días de la semana actual

@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import '../../atoms/smart_cached_image.dart';
 
 /// Organism: Selector de imagen para recetas
 class RecipeImagePicker extends StatelessWidget {
@@ -45,13 +45,10 @@ class RecipeImagePicker extends StatelessWidget {
     if (existingImageUrl != null && existingImageUrl!.isNotEmpty) {
       return ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: CachedNetworkImage(
+        child: SmartCachedImage(
           imageUrl: existingImageUrl!,
           fit: BoxFit.cover,
-          placeholder: (context, url) => Center(
-            child: CircularProgressIndicator(color: Colors.grey[400]),
-          ),
-          errorWidget: (context, url, error) => Column(
+          errorWidget: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Icon(Icons.broken_image, size: 48, color: Colors.grey[400]),

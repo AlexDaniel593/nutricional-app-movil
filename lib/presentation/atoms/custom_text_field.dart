@@ -32,6 +32,8 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
     return TextFormField(
       controller: controller,
       obscureText: obscureText,
@@ -39,15 +41,16 @@ class CustomTextField extends StatelessWidget {
       validator: validator,
       maxLines: maxLines,
       enabled: enabled,
+      style: theme.textTheme.bodyLarge, // Usar estilo del tema
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
         prefixIcon: prefixIcon != null
-            ? Icon(prefixIcon, color: AppColors.fern)
+            ? Icon(prefixIcon, color: theme.colorScheme.primary)
             : null,
         suffixIcon: suffixIcon != null
             ? IconButton(
-                icon: Icon(suffixIcon, color: AppColors.fern),
+                icon: Icon(suffixIcon, color: theme.colorScheme.primary),
                 onPressed: onSuffixIconPressed,
               )
             : null,

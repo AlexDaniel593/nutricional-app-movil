@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../providers/product_provider.dart';
 import '../providers/auth_provider.dart';
+import '../atoms/smart_cached_image.dart';
 
 class ScannerScreen extends StatefulWidget {
   final bool showBottomNav;
@@ -98,15 +98,11 @@ class _ScannerScreenState extends State<ScannerScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (product.imageUrl.isNotEmpty)
-                CachedNetworkImage(
+                SmartCachedImage(
                   imageUrl: product.imageUrl,
                   height: 150,
                   fit: BoxFit.cover,
-                  placeholder: (context, url) => const SizedBox(
-                    height: 150,
-                    child: Center(child: CircularProgressIndicator()),
-                  ),
-                  errorWidget: (context, url, error) => const Icon(Icons.image_not_supported, size: 100),
+                  errorWidget: const Icon(Icons.image_not_supported, size: 100),
                 ),
               const SizedBox(height: 12),
               Text('Marca: ${product.brand}', style: const TextStyle(fontWeight: FontWeight.bold)),

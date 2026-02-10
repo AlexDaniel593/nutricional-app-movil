@@ -24,7 +24,11 @@ class CalendarRepositoryImpl implements CalendarRepository {
     if (_connectivityService.isConnected) {
       try {
         final createdEntry = await _remoteDatasource.createEntry(entry);
-        // Actualizar local con el ID de la nube si es diferente
+        // Eliminar la entrada temporal local si el ID cambió
+        if (createdEntry.id != entry.id) {
+          await _localDatasource.hardDeleteEntry(entry.id);
+        }
+        // Guardar con el ID definitivo de Firebase
         await _localDatasource.saveEntry(createdEntry, synced: true);
         return createdEntry;
       } catch (e) {
@@ -61,28 +65,8 @@ class CalendarRepositoryImpl implements CalendarRepository {
     DateTime startDate,
     DateTime endDate,
   ) async {
-    // Primero intentar obtener de local (es más rápido)
-    final localEntries = await _localDatasource.getEntriesByDateRange(userId, startDate, endDate);
-    
-    // Si hay conexión, sincronizar en segundo plano sin bloquear
-    if (_connectivityService.isConnected) {
-      // No await - sincronizar en background con un pequeño delay
-      Future.delayed(const Duration(milliseconds: 1000)).then((_) async {
-        try {
-          final cloudEntries = await _remoteDatasource.getEntriesByDateRange(
-            userId,
-            startDate,
-            endDate,
-          );
-          // Actualizar cache local con los datos de la nube
-          await _localDatasource.saveEntriesFromCloud(cloudEntries);
-        } catch (_) {
-          // Ignorar errores de sincronización background
-        }
-      });
-    }
-
-    return localEntries;
+    // Obtener de local (la sincronización se maneja en syncAllFromCloud)
+    return await _localDatasource.getEntriesByDateRange(userId, startDate, endDate);
   }
 
   @override

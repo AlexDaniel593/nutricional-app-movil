@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../providers/product_provider.dart';
 import '../providers/auth_provider.dart';
+import '../atoms/smart_cached_image.dart';
 import '../../domain/entities/product.dart';
 import 'scanner_screen.dart';
 import 'product_detail_screen.dart';
@@ -120,24 +120,12 @@ class _ProductListScreenState extends State<ProductListScreen> {
                             );
                           },
                           leading: product.imageUrl.isNotEmpty
-                              ? CachedNetworkImage(
+                              ? SmartCachedImage(
                                   imageUrl: product.imageUrl,
                                   width: 60,
                                   height: 60,
                                   fit: BoxFit.cover,
-                                  placeholder: (context, url) => Container(
-                                    width: 60,
-                                    height: 60,
-                                    color: Colors.grey[200],
-                                    child: const Center(
-                                      child: SizedBox(
-                                        width: 20,
-                                        height: 20,
-                                        child: CircularProgressIndicator(strokeWidth: 2),
-                                      ),
-                                    ),
-                                  ),
-                                  errorWidget: (context, url, error) => const Icon(Icons.image_not_supported),
+                                  errorWidget: const Icon(Icons.image_not_supported),
                                 )
                               : const Icon(Icons.inventory_2, size: 40),
                           title: Text(
