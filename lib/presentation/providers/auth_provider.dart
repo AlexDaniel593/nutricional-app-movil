@@ -274,6 +274,7 @@ class AuthProvider with ChangeNotifier {
 
     try {
       // 1. Intentar primero con API externa
+      try {
         _currentUser = await _loginWithApi(email, password);
         
         if (_currentUser != null) {
@@ -281,9 +282,22 @@ class AuthProvider with ChangeNotifier {
           await _userLocalDatasource.saveUser(_currentUser!);
           return;
         }
+      } catch (apiError) {
+        // Si es error de certificado SSL o conexión, intentar con Firebase
+        final errorMsg = apiError.toString().toLowerCase();
+        if (errorMsg.contains('handshake') || 
+            errorMsg.contains('certificado ssl') ||
+            errorMsg.contains('socket') ||
+            errorMsg.contains('timeout')) {
+          // Silenciosamente intentar con Firebase
+          print('API externa no disponible, usando Firebase: $apiError');
+        } else {
+          // Si es error de credenciales, lanzar el error
+          throw apiError;
+        }
+      }
 
-
-      // 2. Si la API falla, intentar con Firebase
+      // 2. Si la API falla por problemas de conexión/SSL, intentar con Firebase
       try {
         _currentUser = await _loginWithEmail(email, password);
         
