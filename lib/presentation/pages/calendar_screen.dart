@@ -422,6 +422,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
           scheduledDate: scheduledDate,
           mealType: mealType,
         );
+        
+        // Redirigir al home
+        if (mounted) {
+          Navigator.pushReplacementNamed(context, '/home');
+        }
       }
     }
   }
@@ -462,6 +467,11 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
     if (result == 'delete' && authProvider.currentUser != null) {
       await calendarProvider.removeEntry(entry.id, authProvider.currentUser!.id);
+      
+      // Redirigir al home
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/home');
+      }
     } else if (result == 'view' && mounted) {
       // Cargar la receta completa y navegar al detalle
       final recipeProvider = context.read<RecipeProvider>();
